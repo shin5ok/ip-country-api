@@ -32,7 +32,7 @@ Version 0.01
   $ipc->is_country('203.139.161.100', 'JP');
   # return 'True'
 
-  $ipc->is_country('203.139.161.100', 'TV');
+  $ipc->is_country('203.139.161.100', 'KR');
   # return 'False'
 
 
@@ -70,7 +70,7 @@ sub get_country {
 
   my $formated_ip = class_c_format( $ip );
 
-  my $code = $self->{redis}->get( $formated_ip );
+  my $code = $self->redis->get( $formated_ip );
 
   if (not defined $code) {
     croak "*** $formated_ip is not found";
