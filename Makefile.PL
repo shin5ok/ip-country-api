@@ -17,6 +17,9 @@ WriteMakefile(
         'Class::Accessor::Lite' => 0,
         'Redis' => 0,
         'Furl' => 0,
+        'Net::Server::Proto::SSL' => 0,
+        'IO::Socket::SSL' => 0,
+        'Starman' => 0,
     },
     BUILD_REQUIRES => {
         'Test::More' => 0,
