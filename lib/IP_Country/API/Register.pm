@@ -37,8 +37,6 @@ use Furl ();
 
 use base qw( IP_Country::API );
 
-our $apnic_uri = q{http://ftp.apnic.net/stats/apnic/delegated-apnic-latest};
-
 sub run {
   my $self = shift;
   my $args = shift;
@@ -46,14 +44,14 @@ sub run {
   my $furl_option_args = exists $args->{furl_args}
                        ? $args->{furl_args}
                        : +{};
-                    
+
   my %furl_args = ( timeout => 120 );
   %furl_args    = ( %furl_args, %{$furl_option_args} );
 
-  my $furl = Furl->new( %furl_args );
-  my $res  = $furl->get( $apnic_uri );
+  require IP_Country::API::Site_DB;
+  my $content = IP_Country::API::Site_DB->new( \%furl_args )->get;
 
-  for my $line (split /\n/, $res->content) {
+  for my $line (split /\n/, $content) {
     # apnic|JP|ipv4|1.1.64.0|16384|20110412|allocated
     $line =~ m{^[^\|]+\|([^\|]+)\|ipv4\|\d+} or next;
     my @p = split m{\|}, $line;
