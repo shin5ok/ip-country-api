@@ -7,6 +7,7 @@ use Carp;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use IP_Country::API;
+use IP_Country::API::Site_DB;
 app->renderer->default_format('json');
 
 helper ip_country_obj => sub {
@@ -37,6 +38,35 @@ get '/country/(*code)/(*ip)' => sub {
   }
 
   $self->render_json({ result => 1, data => $data });
+};
+
+get '/htaccess/(*code)' => sub {
+  my ($self) = @_;
+  
+  my $site_db_obj = IP_Country::API::Site_DB->new({ env_proxy => 1});
+  my $content = $site_db_obj->get;
+  
+  my $text = "Order Deny,Allow\n";
+     $text.= "Deny from All\n";
+
+  my $code = uc $self->param('code');
+
+  for my $line (split /\n/, $content) {
+    # apnic|JP|ipv4|1.1.64.0|16384|20110412|allocated
+    $line =~ m{^[^\|]+\|([^\|]+)\|ipv4\|\d+} or next;
+    my @p = split m{\|}, $line;
+  
+    my $country_code = $p[1];
+    $country_code eq $code or next;
+  
+    my $mask    = 32 - log($p[4]) / log(2);
+    my $ip_mask = sprintf "%s/%d", $p[3], $mask;
+    $text .= "Allow from $ip_mask\n";
+    
+  }
+
+  $self->render_text( $text );
+
 };
 
 app->start;
