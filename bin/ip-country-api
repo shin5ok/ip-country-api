@@ -5,6 +5,7 @@ use Mojolicious::Lite;
 
 use Carp;
 use FindBin;
+use Geo::IP;
 use lib "$FindBin::Bin/../lib";
 use IP_Country::API;
 use IP_Country::API::Site_DB;
